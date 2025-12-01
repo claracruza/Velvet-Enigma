@@ -129,12 +129,12 @@ export default function GameSection() {
       const encryptedInput = await input.encrypt();
       
       // Convert Uint8Array to hex string for viem
-      const handleHex = "0x" + Array.from(encryptedInput.handles[0])
+      const handleHex = ("0x" + Array.from(encryptedInput.handles[0])
         .map(b => b.toString(16).padStart(2, "0"))
-        .join("");
-      const proofHex = "0x" + Array.from(encryptedInput.inputProof)
+        .join("")) as `0x${string}`;
+      const proofHex = ("0x" + Array.from(encryptedInput.inputProof)
         .map(b => b.toString(16).padStart(2, "0"))
-        .join("");
+        .join("")) as `0x${string}`;
       
       console.log("✅ Encrypted input created");
       console.log("   Handle (hex):", handleHex);
