@@ -259,17 +259,18 @@ export default function GameSection() {
 
       console.log("✅ Decrypted results:", decryptedResults);
 
-      // Parse results
+      // Parse results - cast to Record for string indexing
+      const results = decryptedResults as Record<string, boolean | bigint | number>;
       const normalizeHandle = (h: string) => h.toLowerCase();
       const resultKey = normalizeHandle(state.resultHandle);
       const userGuessKey = normalizeHandle(state.userGuessHandle!);
       const systemNumKey = normalizeHandle(state.systemNumHandle!);
 
-      const isMatch = decryptedResults[resultKey] === true || 
-                      decryptedResults[resultKey] === 1n ||
-                      decryptedResults[resultKey] === 1;
-      const userGuessValue = Number(decryptedResults[userGuessKey]);
-      const systemNumValue = Number(decryptedResults[systemNumKey]);
+      const isMatch = results[resultKey] === true || 
+                      results[resultKey] === 1n ||
+                      results[resultKey] === 1;
+      const userGuessValue = Number(results[userGuessKey]);
+      const systemNumValue = Number(results[systemNumKey]);
 
       setState((prev) => ({
         ...prev,
