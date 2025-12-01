@@ -1,0 +1,24 @@
+{
+  "name": "velvet-enigma-contracts",
+  "version": "1.0.0",
+  "description": "Velvet Enigma - FHE Number Guessing Game Smart Contracts",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy": "hardhat run scripts/deploy.ts --network sepolia",
+    "verify": "hardhat verify --network sepolia"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@nomicfoundation/hardhat-verify": "^2.0.0",
+    "@types/node": "^20.0.0",
+    "hardhat": "^2.22.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.0"
+  },
+  "dependencies": {
+    "@fhevm/solidity": "^0.9.1",
+    "dotenv": "^16.4.0",
+    "encrypted-types": "^0.0.4"
+  }
+}
