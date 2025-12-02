@@ -229,7 +229,6 @@ export default function GameSection() {
 
       console.log("EIP-712 Domain:", eip712.domain);
 
-      // Sign with wallet
       const signature = await walletClient.signTypedData({
         account: address,
         domain: {
@@ -238,7 +237,7 @@ export default function GameSection() {
         },
         primaryType: "UserDecryptRequestVerification",
         types: {
-          UserDecryptRequestVerification: (eip712.types as any).UserDecryptRequestVerification,
+          UserDecryptRequestVerification: eip712.types.UserDecryptRequestVerification,
         },
         message: eip712.message as Record<string, unknown>,
       });
