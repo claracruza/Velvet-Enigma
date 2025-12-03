@@ -1,7 +1,7 @@
 import { ethers } from "hardhat";
 
 async function main() {
-  console.log("Deploying CipherGuess contract...");
+  console.log("Deploying VelvetEnigma contract...");
 
   const [deployer] = await ethers.getSigners();
   console.log("Deploying with account:", deployer.address);
@@ -9,13 +9,13 @@ async function main() {
   const balance = await ethers.provider.getBalance(deployer.address);
   console.log("Account balance:", ethers.formatEther(balance), "ETH");
 
-  const CipherGuess = await ethers.getContractFactory("CipherGuess");
-  const cipherGuess = await CipherGuess.deploy();
+  const VelvetEnigma = await ethers.getContractFactory("VelvetEnigma");
+  const velvetEnigma = await VelvetEnigma.deploy();
 
-  await cipherGuess.waitForDeployment();
+  await velvetEnigma.waitForDeployment();
 
-  const address = await cipherGuess.getAddress();
-  console.log("CipherGuess deployed to:", address);
+  const address = await velvetEnigma.getAddress();
+  console.log("VelvetEnigma deployed to:", address);
 
   console.log("\n========================================");
   console.log("Deployment Summary:");
@@ -30,4 +30,3 @@ main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
 });
-
