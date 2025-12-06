@@ -269,7 +269,7 @@ export default function GameSection() {
         className="text-center mb-12"
       >
         <h2 className="font-display text-3xl tracking-wider text-gold-100 mb-2">
-          CIPHER GUESS
+          GUESS
         </h2>
         <p className="text-neutral-500 text-sm tracking-wide">
           Select a number • Encrypted on-chain • Reveal with signature
