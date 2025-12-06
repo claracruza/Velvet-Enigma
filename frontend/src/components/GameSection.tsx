@@ -62,20 +62,12 @@ export default function GameSection() {
       if (fhevmInstanceRef.current) return;
       
       try {
-        console.log("🔧 Initializing FHEVM SDK...");
-        
         const { createInstance, initSDK } = await import("@zama-fhe/relayer-sdk/web");
-        
         await initSDK();
-        console.log("✅ WASM initialized");
-        
         const instance = await createInstance(FHEVM_CONFIG);
         fhevmInstanceRef.current = instance;
         setSdkReady(true);
-        
-        console.log("✅ FHEVM SDK ready");
-      } catch (err) {
-        console.error("❌ SDK init error:", err);
+      } catch {
         setState(prev => ({ ...prev, error: "Failed to initialize FHE SDK" }));
       }
     };
@@ -101,7 +93,6 @@ export default function GameSection() {
   }, []);
 
   const handleNumberSelect = (num: number) => {
-    console.log("Number clicked:", num, "Current phase:", state.phase);
     if (state.phase === "idle" || state.phase === "selecting") {
       setState((prev) => ({ ...prev, phase: "selecting", selectedNumber: num }));
     }
@@ -121,14 +112,10 @@ export default function GameSection() {
     try {
       setState((prev) => ({ ...prev, phase: "submitting", error: null }));
 
-      console.log("🔐 Encrypting guess in frontend:", state.selectedNumber);
-      
-      // 1. FRONTEND ENCRYPTION - User's guess is encrypted BEFORE sending to chain
       const input = instance.createEncryptedInput(CONTRACT_ADDRESS, address);
-      input.add8(state.selectedNumber); // Add uint8 value
+      input.add8(state.selectedNumber);
       const encryptedInput = await input.encrypt();
       
-      // Convert Uint8Array to hex string for viem
       const handleHex = ("0x" + Array.from(encryptedInput.handles[0])
         .map(b => b.toString(16).padStart(2, "0"))
         .join("")) as `0x${string}`;
@@ -136,11 +123,6 @@ export default function GameSection() {
         .map(b => b.toString(16).padStart(2, "0"))
         .join("")) as `0x${string}`;
       
-      console.log("✅ Encrypted input created");
-      console.log("   Handle (hex):", handleHex);
-      console.log("   InputProof length:", encryptedInput.inputProof.length);
-      
-      // 2. Send CIPHERTEXT to contract - NO PLAINTEXT IN CALLDATA
       const { encodeFunctionData } = await import("viem");
       const data = encodeFunctionData({
         abi: CONTRACT_ABI,
@@ -153,7 +135,6 @@ export default function GameSection() {
         data,
         gas: BigInt(5000000),
       });
-      console.log("Transaction hash:", hash);
 
       await publicClient.waitForTransactionReceipt({ hash });
 
@@ -170,9 +151,6 @@ export default function GameSection() {
         args: [gameCount],
       })) as [string, string, string];
 
-      console.log("Game ID:", gameCount.toString());
-      console.log("Handles from contract:", handles);
-
       setState((prev) => ({
         ...prev,
         phase: "waiting_decrypt",
@@ -182,7 +160,6 @@ export default function GameSection() {
         systemNumHandle: handles[2],
       }));
     } catch (err: unknown) {
-      console.error("Play error:", err);
       setState((prev) => ({
         ...prev,
         phase: "idle",
@@ -211,23 +188,17 @@ export default function GameSection() {
         { handle: state.systemNumHandle!, contractAddress: CONTRACT_ADDRESS },
       ];
 
-      // Generate keypair using SDK
       const keypair = instance.generateKeypair();
-      console.log("✅ Keypair generated");
-
       const startTimestamp = Math.floor(Date.now() / 1000);
       const durationDays = 1;
       const contractAddresses = [CONTRACT_ADDRESS];
 
-      // Create EIP-712 typed data using SDK
       const eip712 = instance.createEIP712(
         keypair.publicKey,
         contractAddresses,
         startTimestamp,
         durationDays
       );
-
-      console.log("EIP-712 Domain:", eip712.domain);
 
       const signature = await walletClient.signTypedData({
         account: address,
@@ -242,9 +213,6 @@ export default function GameSection() {
         message: eip712.message as Record<string, unknown>,
       });
 
-      console.log("✅ Signature obtained");
-
-      // Decrypt using SDK's userDecrypt (handles all relayer details)
       const decryptedResults = await instance.userDecrypt(
         handles,
         keypair.privateKey,
@@ -256,9 +224,6 @@ export default function GameSection() {
         durationDays
       );
 
-      console.log("✅ Decrypted results:", decryptedResults);
-
-      // Parse results - cast to Record for string indexing
       const results = decryptedResults as Record<string, boolean | bigint | number>;
       const normalizeHandle = (h: string) => h.toLowerCase();
       const resultKey = normalizeHandle(state.resultHandle);
@@ -279,7 +244,6 @@ export default function GameSection() {
         systemNum: systemNumValue,
       }));
     } catch (err: unknown) {
-      console.error("Decrypt error:", err);
       setState((prev) => ({
         ...prev,
         phase: "waiting_decrypt",
